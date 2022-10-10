@@ -24,7 +24,7 @@ class App:
             if not result: 
                 break
             try:
-                self.frame_queue.put((frame, out), timeout=0.5)
+                self.frame_queue.put((frame, out), timeout=1)
             except Full:
                 break
             cv2.waitKey(1)
@@ -35,22 +35,20 @@ class App:
     def __consumer(self):
         while not self.event.is_set():
             try:
-                frame, out = self.frame_queue.get(timeout=0.2)
+                frame, out = self.frame_queue.get(timeout=1)
             except Empty:
                 break
             start = time.monotonic()
             image = self.pipeline(frame)
             end = time.monotonic()
-            if __debug__:
-                fps = int(1 / (end - start))
-                print(f"\rFPS: {fps}", end="")
+            #if __debug__:
+            #    fps = int(1 / (end - start))
+            #    print(f"\rPipeline FPS: {fps}", end="")
             try:
                 self.output_queue.put((image, out))
             except Full:
                 break
             self.frame_queue.task_done()
-            if self.opt["show"]:
-                cv2.imshow(str(out), frame)
             cv2.waitKey(1)
         if __debug__:
             print("consumer done")
@@ -58,14 +56,16 @@ class App:
     def __writer(self):
         while True:
             try:
-                frame, out = self.output_queue.get(timeout=0.2)
+                frame, out = self.output_queue.get(timeout=1)
             except Empty:
                 break
             if self.event.is_set():
                 self.output_queue.task_done()
                 break
-            out.write(frame)
             self.output_queue.task_done()
+            out.write(frame)
+            if self.opt["show"]:
+                cv2.imshow(str(out), frame)
             cv2.waitKey(1)
         if __debug__:
             print("writer done")
@@ -86,7 +86,7 @@ class App:
                 time.sleep(1)
                 if __debug__:
                     end = time.monotonic()
-                    #print(f"\rElapsed: {end - start:.2f}", end="")
+                    print(f"\rElapsed: {end - start:.2f}", end="")
         except:
             self.event.set()
             self.executor.shutdown()
