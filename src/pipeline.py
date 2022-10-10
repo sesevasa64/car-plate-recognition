@@ -9,8 +9,10 @@ class Pipeline:
     def __init__(self, detector, reader):
         self.detector = detector
         self.reader = reader
+
     def __call__(self, frame):
         return NotImplementedError()
+
     @staticmethod
     def default():
         return NotImplementedError() 
@@ -19,6 +21,7 @@ class Pipeline:
 class YoloPipeline(Pipeline):
     def __init__(self, detector, reader):
         super().__init__(detector, reader)
+
     def __call__(self, frame):
         with torch.no_grad():
             outputs = self.detector(frame)
@@ -31,6 +34,7 @@ class YoloPipeline(Pipeline):
                 image, (x1, y1), (x2, y2), (0, 0, 255), 2
             )
         return image
+
     @classmethod
     def default(cls):
         # Detection
@@ -44,6 +48,7 @@ class YoloPipeline(Pipeline):
 class NomeroffPipeline(Pipeline):
     def __init__(self, detector, reader):
         super().__init__(detector, reader)
+
     def __call__(self, frame):
         outputs = self.detector.forward(frame)[0]
         numberplate = outputs[1]
@@ -54,15 +59,18 @@ class NomeroffPipeline(Pipeline):
                 frame, (x1, y1), (x2, y2), (0, 0, 255), 2
             )
         return frame
+
     @classmethod
     def default(cls):
         detection = NumberPlateLocalization("number_plate_localization", None)
         reader = easyocr.Reader(["en"])
         return cls(detection, reader)
 
+
 class ClassicPipeline(Pipeline):
     def __init__(self, detector, reader):
         super().__init__(detector, reader)
+
     def __call__(self, frame):
         model_outputs = self.detector.predict(frame)
         if len(model_outputs) == 0:
@@ -75,6 +83,7 @@ class ClassicPipeline(Pipeline):
             frame, (x1_res, y1_res), (x2_res, y2_res), (0, 0, 255), 2
         )
         return frame
+
     @classmethod
     def default(cls):
         detection = Detector()
