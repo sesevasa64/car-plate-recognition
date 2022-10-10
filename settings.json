@@ -1,9 +1,10 @@
 {
     "sources": [
         {
-            "input": "traffic.webm",
+            "input": "murino.mkv",
             "output": "test.mp4"
         }
     ],
-    "delay": 0.2
+    "delay": 0.2,
+    "show": true
 }

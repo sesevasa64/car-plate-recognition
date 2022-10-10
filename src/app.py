@@ -24,7 +24,7 @@ class App:
             if not result: 
                 break
             try:
-                self.frame_queue.put((frame, out), timeout=0.2)
+                self.frame_queue.put((frame, out), timeout=0.5)
             except Full:
                 break
             cv2.waitKey(1)
@@ -38,12 +38,19 @@ class App:
                 frame, out = self.frame_queue.get(timeout=0.2)
             except Empty:
                 break
+            start = time.monotonic()
             image = self.pipeline(frame)
+            end = time.monotonic()
+            if __debug__:
+                fps = int(1 / (end - start))
+                print(f"\rFPS: {fps}", end="")
             try:
                 self.output_queue.put((image, out))
             except Full:
                 break
             self.frame_queue.task_done()
+            if self.opt["show"]:
+                cv2.imshow(str(out), frame)
             cv2.waitKey(1)
         if __debug__:
             print("consumer done")
@@ -79,7 +86,7 @@ class App:
                 time.sleep(1)
                 if __debug__:
                     end = time.monotonic()
-                    print(f"\rElapsed: {end - start:.2f}", end="")
+                    #print(f"\rElapsed: {end - start:.2f}", end="")
         except:
             self.event.set()
             self.executor.shutdown()

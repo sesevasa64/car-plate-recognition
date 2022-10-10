@@ -4,19 +4,19 @@ import easyocr
 
 
 class Pipeline:
-    def __init__(self, model, reader):
-        self.detection_model = model
+    def __init__(self, detector, reader):
+        self.detector = detector
         self.reader = reader
     def __call__(self, frame):
         with torch.no_grad():
-            outputs = self.detection_model(frame)
-        img = outputs.ims[0]
-        h, w, _ = img.shape
-        for x1, y1, x2, y2, _, _ in outputs.xyxyn[0]:
+            outputs = self.detector(frame)
+        image = outputs.ims[0]
+        for *coords, _, _ in outputs.xyxy[0].to("cpu"):
+            x1, y1, x2, y2 = map(int, coords)
             cv2.rectangle(
-                img, (int(x1*w), int(y1*h)), (int(x2*w), int(y2*h)), (0,0,255), 2
+                image, (x1, y1), (x2, y2), (0,0,255), 2
             )
-        return img
+        return image
     @staticmethod
     def default():
         # Detection
