@@ -49,28 +49,3 @@ class NomeroffPipeline(Pipeline):
         detection = NumberPlateLocalization("number_plate_localization", None)
         reader = easyocr.Reader(['en'], recog_network='custom_model')
         return cls(detection, reader)
-
-
-class YoloPipeline(Pipeline):
-    def __init__(self, detector, reader):
-        super().__init__(detector, reader)
-    def __call__(self, frame):
-        with torch.no_grad():
-            outputs = self.detector(frame)
-        image = outputs.ims[0]
-        for *coords, conf, cls in outputs.xyxy[0].to("cpu"):
-            if cls != 2:
-                break
-            x1, y1, x2, y2 = map(int, coords)
-            cv2.rectangle(
-                image, (x1, y1), (x2, y2), (0, 0, 255), 2
-            )
-        return image
-    @classmethod
-    def default(cls):
-        # Detection
-        model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
-        model.train(False)
-        # Recognition
-        reader = easyocr.Reader(["en"])
-        return cls(model, reader)
