@@ -15,6 +15,7 @@ class App:
         self.output_queue = Queue(maxsize=60)
         self.executor = ThreadPoolExecutor()
         self.pipeline = pipeline
+
     # Read from sources
     def __producer(self, source, filename):
         cap = cv2.VideoCapture(source)
@@ -31,6 +32,7 @@ class App:
         out.release()
         if __debug__:
             print("producer done")
+
     # Proceed through pipeline
     def __consumer(self):
         while not self.event.is_set():
@@ -52,6 +54,7 @@ class App:
             cv2.waitKey(1)
         if __debug__:
             print("consumer done")
+
     # Write to files
     def __writer(self):
         while True:
@@ -69,6 +72,7 @@ class App:
             cv2.waitKey(1)
         if __debug__:
             print("writer done")
+
     def run(self):
         def callback(fut: Future):
             fut.result()
