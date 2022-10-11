@@ -8,8 +8,10 @@ class Pipeline:
     def __init__(self, detector, reader):
         self.detector = detector
         self.reader = reader
+
     def __call__(self, frame):
         return NotImplementedError()
+
     @staticmethod
     def default():
         return NotImplementedError() 
@@ -18,6 +20,7 @@ class Pipeline:
 class NomeroffPipeline(Pipeline):
     def __init__(self, detector, reader):
         super().__init__(detector, reader)
+
     def __call__(self, frame):
         outputs = self.detector.forward(frame)[0]
         numberplate = outputs[1]
@@ -44,6 +47,7 @@ class NomeroffPipeline(Pipeline):
             )
             cv2.putText(frame, content, (x1, y1 - offset), font, size, (255, 255, 255), thickness)
         return frame
+
     @classmethod
     def default(cls):
         detection = NumberPlateLocalization("number_plate_localization", None)
@@ -54,6 +58,7 @@ class NomeroffPipeline(Pipeline):
 class YoloPipeline(Pipeline):
     def __init__(self, detector, reader):
         super().__init__(detector, reader)
+
     def __call__(self, frame):
         with torch.no_grad():
             outputs = self.detector(frame)
@@ -66,6 +71,7 @@ class YoloPipeline(Pipeline):
                 image, (x1, y1), (x2, y2), (0, 0, 255), 2
             )
         return image
+
     @classmethod
     def default(cls):
         # Detection
