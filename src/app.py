@@ -2,7 +2,7 @@ import cv2
 import time
 from threading import Event
 from queue import Queue, Empty, Full
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Future, ThreadPoolExecutor
 from .utilities import load_json, create_output_stream
 from .pipeline import Pipeline
 
@@ -74,23 +74,32 @@ class App:
             print("writer done")
 
     def run(self):
+        def callback(fut: Future):
+            fut.result()
         # Start threads
+        futures = []
         sources = self.opt["sources"]
         for values in sources:
             source, filename = values.values()
-            self.executor.submit(self.__producer, source, filename)
+            future = self.executor.submit(self.__producer, source, filename)
+            future.add_done_callback(callback)
+            futures.append(future)
             if __debug__:
                 print(source, filename)
-        self.executor.submit(self.__consumer)
-        self.executor.submit(self.__writer)
+        future = self.executor.submit(self.__consumer)
+        future.add_done_callback(callback)
+        futures.append(future)
+        future = self.executor.submit(self.__writer)
+        future.add_done_callback(callback)
+        futures.append(future)
         # Run application
         try:
             start = time.monotonic()
-            while True: 
+            while True:
                 time.sleep(1)
                 if __debug__:
                     end = time.monotonic()
                     print(f"\rElapsed: {end - start:.2f}", end="")
-        except:
+        except KeyboardInterrupt:
             self.event.set()
             self.executor.shutdown()

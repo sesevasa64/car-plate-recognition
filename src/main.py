@@ -1,8 +1,8 @@
 from .app import App
-from .pipeline import YoloPipeline, NomeroffPipeline, ClassicPipeline
+from .pipeline import YoloPipeline, NomeroffPipeline
 
 def main():
-    pipeline = ClassicPipeline.default()
+    pipeline = NomeroffPipeline.default()
     app = App("settings.json", pipeline)
     app.run()
 
