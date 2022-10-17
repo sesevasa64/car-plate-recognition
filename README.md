@@ -2,6 +2,7 @@
 ## About
 CLPR is a project that will allow you to recognize license plates at the checkpoint and automatically pass cars. This project is based on the latest research in this field and was developed to achieve the best accuracy in this task and to compare the open-source approaches.  
 ![Example](./media/example.jpg)
+![Video](./media/test.gif)
 
 As a result, the following metrics were obtained, in comparison with the default model.  
 ![Score](./media/score.jpg)  
