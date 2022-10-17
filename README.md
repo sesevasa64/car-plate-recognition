@@ -29,6 +29,21 @@ To download our test example video, you can use the [yt-dlp](https://github.com/
 
 ---
 
+## Performance
+We tested our pipeline with the following PC characteristic:
+| Type | Model                           |
+|------|---------------------------------|
+| CPU  | Intel Core i5-3470              |
+| GPU  | NVIDIA GeForce GTX 1060 6GB     |
+| RAM  | Crucial DDR3 1600MHz 16GB (8x2) |
+| HDD  | Seagate BarraCuda 2TB           |
+Results:
+| Resolution | Performance |
+|------------|-------------|
+| 1080P      | 27 FPS      |
+
+---
+
 ## Training
 For training, we used datasets from [Nomeroff](https://nomeroff.net.ua/datasets/).  
 There are data from almost all CIS regions, including RU.

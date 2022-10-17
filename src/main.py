@@ -1,5 +1,5 @@
 from .app import App
-from .pipeline import YoloPipeline, NomeroffPipeline
+from .pipeline import NomeroffPipeline
 
 def main():
     pipeline = NomeroffPipeline.default()

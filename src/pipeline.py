@@ -1,5 +1,4 @@
 import cv2
-import torch
 import easyocr
 from nomeroff_net.pipelines.number_plate_localization import NumberPlateLocalization
 

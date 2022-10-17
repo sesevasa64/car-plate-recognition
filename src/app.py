@@ -35,17 +35,16 @@ class App:
 
     # Proceed through pipeline
     def __consumer(self):
+        durations = []
         while not self.event.is_set():
             try:
                 frame, out = self.frame_queue.get(timeout=1)
             except Empty:
                 break
-            start = time.monotonic()
+            start = time.time()
             image = self.pipeline(frame)
-            end = time.monotonic()
-            #if __debug__:
-            #    fps = int(1 / (end - start))
-            #    print(f"\rPipeline FPS: {fps}", end="")
+            end = time.time()
+            durations.append(end - start)
             try:
                 self.output_queue.put((image, out))
             except Full:
@@ -53,6 +52,8 @@ class App:
             self.frame_queue.task_done()
             cv2.waitKey(1)
         if __debug__:
+            fps = int(1 / (sum(durations) / len(durations)))
+            print(f"\nPipeline FPS: {fps}")
             print("consumer done")
 
     # Write to files
