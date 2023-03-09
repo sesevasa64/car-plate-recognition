@@ -38,6 +38,7 @@ We tested our pipeline with the following PC characteristic:
 | GPU  | NVIDIA GeForce GTX 1060 6GB     |
 | RAM  | Crucial DDR3 1600MHz 16GB (8x2) |
 | HDD  | Seagate BarraCuda 2TB           |
+
 Results:
 | Resolution | Performance |
 |------------|-------------|
